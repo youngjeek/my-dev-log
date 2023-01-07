@@ -28,11 +28,12 @@ const BlogPostTemplate = ({
           itemProp="articleBody"
         />
         <hr />
+        <TableOfContents />
         <footer>
+          comments...
           <Bio />
         </footer>
       </article>
-      <TableOfContents />
       <nav className="blog-post-nav">
         <ul
           style={{
