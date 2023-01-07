@@ -4,6 +4,7 @@ import { Link, graphql } from "gatsby"
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import TableOfContents from "../components/tableOfContents"
 
 const BlogPostTemplate = ({
   data: { previous, next, site, markdownRemark: post },
@@ -31,6 +32,7 @@ const BlogPostTemplate = ({
           <Bio />
         </footer>
       </article>
+      <TableOfContents />
       <nav className="blog-post-nav">
         <ul
           style={{
@@ -91,6 +93,7 @@ export const pageQuery = graphql`
         title
         date(formatString: "MMMM DD, YYYY")
         description
+        tags
       }
     }
     previous: markdownRemark(id: { eq: $previousPostId }) {
