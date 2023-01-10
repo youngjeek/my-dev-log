@@ -3,20 +3,22 @@ import { Link } from "gatsby"
 import { StickyHeader } from "./styled"
 
 const Layout = ({ location, title, children }) => {
-  const rootPath = `${__PATH_PREFIX__}/`
+  const rootPath = `${__PATH_PREFIX__}/my-dev-log`
   const isRootPath = location.pathname === rootPath
   let header
 
   if (isRootPath) {
     header = (
-      <h1 className="main-heading">
-        <Link to="/">{title}</Link>
-      </h1>
+      <StickyHeader>
+        <h1 className="main-heading">
+          <Link to="/my-dev-log">{title}</Link>
+        </h1>
+      </StickyHeader>
     )
   } else {
     header = (
       <StickyHeader>
-        <Link className="header-link-home" to="/">
+        <Link className="header-link-home" to="/my-dev-log">
           {title}
         </Link>
       </StickyHeader>

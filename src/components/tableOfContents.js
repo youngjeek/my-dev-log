@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 const TOC = styled.nav`
   position: sticky;
   position: -webkit-sticky; /* For Safari */
@@ -60,93 +60,97 @@ const Headings = ({ headings, activeId }) => (
  */
 const useHeadingsData = () => {
   const [nestedHeadings, setNestedHeadings] = React.useState([])
-
+  const [headings, setHeadings] = useState([])
   React.useEffect(() => {
-    const headingElements = Array.from(
-      document.querySelectorAll("main h2, main h3")
-    )
+    const headingElements = Array.from(document.querySelectorAll("h2, h3"))
+    setHeadings(headingElements.map(heading => heading.id))
 
     // Created a list of headings, with H3s nested
     const newNestedHeadings = getNestedHeadings(headingElements)
+
     setNestedHeadings(newNestedHeadings)
   }, [])
 
-  return { nestedHeadings }
+  const getIndex = useCallback(
+    id => {
+      if (headings.length === 0) return undefined
+      return headings.findIndex(heading => heading === id)
+    },
+    [headings]
+  )
+
+  return { getIndex, nestedHeadings }
 }
 
 const getNestedHeadings = headingElements => {
   const nestedHeadings = []
-
   headingElements.forEach((heading, index) => {
     const { innerText: title, id } = heading
-
-    if (heading.nodeName === "H2") {
-      nestedHeadings.push({ id, title, items: [] })
-    } else if (heading.nodeName === "H3" && nestedHeadings.length > 0) {
+    const headNumber = Number(heading.nodeName[1])
+    if (headNumber === 2) {
+      nestedHeadings.push({ index, title, items: [] })
+    } else if (headNumber === 3 && nestedHeadings.length > 0) {
       nestedHeadings[nestedHeadings.length - 1].items.push({
-        id,
+        index,
         title,
       })
     }
   })
 
-  return nestedHeadings
+  return { nestedHeadings }
 }
 
-const useIntersectionObserver = setActiveId => {
+const useIntersectionObserver = (getIndex, setActiveId) => {
   const headingElementsRef = React.useRef({})
   React.useEffect(() => {
+    //현재페이지에서 헤드 elementsRef를 다 맵핑
     const callback = headings => {
       headingElementsRef.current = headings.reduce((map, headingElement) => {
         map[headingElement.target.id] = headingElement
         return map
       }, headingElementsRef.current)
 
-      // Get all headings that are currently visible on the page
+      //get all heads on current pag
       const visibleHeadings = []
       Object.keys(headingElementsRef.current).forEach(key => {
         const headingElement = headingElementsRef.current[key]
         if (headingElement.isIntersecting) visibleHeadings.push(headingElement)
       })
 
-      const getIndexFromId = id =>
-        headingElements.findIndex(heading => heading.id === id)
-
       // If there is only one visible heading, this is our "active" heading
       if (visibleHeadings.length === 1) {
-        setActiveId(visibleHeadings[0].target.id)
+        setActiveId(getIndex(visibleHeadings[0].target.id))
         // If there is more than one visible heading,
         // choose the one that is closest to the top of the page
       } else if (visibleHeadings.length > 1) {
         const sortedVisibleHeadings = visibleHeadings.sort(
-          (a, b) => getIndexFromId(a.target.id) > getIndexFromId(b.target.id)
+          (a, b) => getIndex(a.target.id) > getIndex(b.target.id)
         )
-
-        setActiveId(sortedVisibleHeadings[0].target.id)
+        setActiveId(getIndex(sortedVisibleHeadings[0].target.id))
       }
     }
 
     const observer = new IntersectionObserver(callback, {
-      root: document.querySelector("iframe"),
-      rootMargin: "500px",
+      rootMargin: "0px 0px -40% 0px",
     })
-
     const headingElements = Array.from(document.querySelectorAll("h2, h3"))
-
     headingElements.forEach(element => observer.observe(element))
-
     return () => observer.disconnect()
-  }, [setActiveId])
+  }, [getIndex, setActiveId])
 }
 
 const TableOfContents = () => {
-  const [activeId, setActiveId] = useState()
-  const { nestedHeadings } = useHeadingsData()
+  const [activeId, setActiveId] = useState(-1)
+  const { getIndex, nestedHeadings } = useHeadingsData()
+  useIntersectionObserver(getIndex, setActiveId)
   return (
-    <TOC aria-label="Table of contents">
-      Hello world!
-      <Headings headings={nestedHeadings} activeId={activeId} />
-    </TOC>
+    <div aria-label="Table of contents">
+      Table ouf Contents{" "}
+      <Headings
+        headings={nestedHeadings > 0 ? nestedHeadings : null}
+        activeId={activeId}
+      />
+    </div>
   )
 }
 

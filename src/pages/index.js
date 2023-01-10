@@ -9,6 +9,7 @@ const BlogIndex = ({ data, location }) => {
   const siteTitle = data.site.siteMetadata?.title || `Title`
   const posts = data.allMarkdownRemark.nodes
 
+  //post가 아무것도 없을 때
   if (posts.length === 0) {
     return (
       <Layout location={location} title={siteTitle}>
@@ -21,7 +22,7 @@ const BlogIndex = ({ data, location }) => {
       </Layout>
     )
   }
-
+  //post글이 한 개 이상일 때
   return (
     <Layout location={location} title={siteTitle}>
       <Bio />
@@ -38,7 +39,7 @@ const BlogIndex = ({ data, location }) => {
               >
                 <header>
                   <h2>
-                    <Link to={post.fields.slug} itemProp="url">
+                    <Link to={"/my-dev-log" + post.fields.slug} itemProp="url">
                       <span itemProp="headline">{title}</span>
                     </Link>
                   </h2>

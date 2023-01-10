@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
 
-import Bio from "../components/bio"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import TableOfContents from "../components/tableOfContents"
@@ -29,11 +28,9 @@ const BlogPostTemplate = ({
         />
         <hr />
         <TableOfContents />
-        <footer>
-          comments...
-          <Bio />
-        </footer>
+        <footer>comments...</footer>
       </article>
+      {/* prev or next */}
       <nav className="blog-post-nav">
         <ul
           style={{
@@ -46,14 +43,14 @@ const BlogPostTemplate = ({
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
+              <Link to={"/my-dev-log" + previous.fields.slug} rel="prev">
                 ← {previous.frontmatter.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
+              <Link to={"/my-dev-log" + next.fields.slug} rel="next">
                 {next.frontmatter.title} →
               </Link>
             )}
@@ -74,7 +71,7 @@ export const Head = ({ data: { markdownRemark: post } }) => {
 }
 
 export default BlogPostTemplate
-
+// $slug: String!
 export const pageQuery = graphql`
   query BlogPostBySlug(
     $id: String!
@@ -90,6 +87,7 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       html
+      tableOfContents
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")

@@ -1,3 +1,20 @@
+# 개인 기술 블로그 만들기
+
+## 베이스 소스코드
+
+공식사이트 개츠비 블로그 스타터 사용
+출처 : https://github.com/gatsbyjs/gatsby-starter-blog
+
+## 목표
+
+이 프로젝트로 개념과 활용을 익힐 구현기능
+
+- SEO
+- Tag별 게시글 분류기능
+- Table of Contents
+  참고 : https://www.emgoto.com/react-table-of-contents/#create-a-hook-to-find-all-headings-on-the-page
+- netlify 배포
+
 <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
 <p align="center">
   <a href="https://www.gatsbyjs.com">
